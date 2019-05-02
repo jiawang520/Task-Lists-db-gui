@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.apache.derby.jdbc.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,7 +23,7 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
     private Connection con;
     private ResultSet rs;
     private Statement stmt;
-
+    ArrayList<String> tablenames = new ArrayList<String>();
     private String addList = JOptionPane.showInputDialog("New Task List Name (type default if not known): ");
 //    private String addList;
 //    Tasklistadder tasklistadder;
@@ -46,7 +47,7 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
         getResultSet();
         displayResults();
         tskAdd = new TaskAdder();
-                tskAdd.addWindowListener(this);
+        tskAdd.addWindowListener(this);
 
         // tskAdd.setVisible(true);
         pnlInsert.setVisible(false);
@@ -408,7 +409,12 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
     }//GEN-LAST:event_formWindowClosing
 
     private void btnAddListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddListActionPerformed
-         tskAdd.setVisible(true);
+        String displaylist = "";
+        for (int i=0; i < tablenames.size();i++){
+            displaylist += tablenames.get(i) +"\n";       
+        }
+        tskAdd.txtTableNames.setText(displaylist);
+        tskAdd.setVisible(true);
     }//GEN-LAST:event_btnAddListActionPerformed
 
     /**
@@ -475,21 +481,20 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
 
     @Override
     public void windowClosing(WindowEvent e) {
-        
-        
+
         //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void windowClosed(WindowEvent e) {
-       System.out.print("closing");
-   
-            addList = tskAdd.getList();
-                    System.out.print("addlist is:"+addList);
+        System.out.print("closing");
 
-            createDBTable();
-            getResultSet();
-            displayResults();
+        addList = tskAdd.getList();
+        System.out.print("addlist is:" + addList);
+        tablenames.add(addList);
+        createDBTable();
+        getResultSet();
+        displayResults();
     }
 
     @Override
