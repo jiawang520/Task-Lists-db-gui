@@ -22,9 +22,11 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
 
     private Connection con;
     private ResultSet rs;
+    private ResultSet rs_tablenames;
     private Statement stmt;
     ArrayList<String> tablenames = new ArrayList<String>();
-    private String addList = JOptionPane.showInputDialog("New Task List Name (type default if not known): ");
+//    private String addList = JOptionPane.showInputDialog("New Task List Name (type default if not known): ");
+    private String addList =  "default_table";
 //    private String addList;
 //    Tasklistadder tasklistadder;
 //    Tasklistadder tasklistadder = new Tasklistadder();
@@ -82,6 +84,13 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
         try {
             stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = stmt.executeQuery("select " + addList + ".* from " + addList);
+//            DatabaseMetaData dbmd = con.getMetaData();
+//            String[] types = {"TABLE"};
+//            ResultSet rs_tablenames = dbmd.getTables(null, null, "%", types);
+//            while(rs_tablenames.next()){
+//                JOptionPane.showMessageDialog(this, rs_tablenames.getString("TABLE_NAME"));
+//            } 
+            
             //ResultSet is scrollable and updatable
             rs.first();
         } catch (SQLException ex) {
@@ -409,10 +418,26 @@ public class ContactManager extends javax.swing.JFrame implements WindowListener
     }//GEN-LAST:event_formWindowClosing
 
     private void btnAddListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddListActionPerformed
-        String displaylist = "";
-        for (int i=0; i < tablenames.size();i++){
-            displaylist += tablenames.get(i) +"\n";       
+        String displaylist = ""; 
+        int i = 1;
+        int j = 0;
+        try {         
+            DatabaseMetaData dbmd = con.getMetaData();
+            String[] types = {"TABLE"};
+            ResultSet rs_tablenames = dbmd.getTables(null, null, "%", types);
+            while(rs_tablenames.next()){
+                displaylist += rs_tablenames.getString("TABLE_NAME") + "\n";
+            } 
+            
+            //ResultSet is scrollable and updatable
+            rs.first();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
+        
+//        for (int i=0; i < tablenames.size();i++){
+//            displaylist += tablenames.get(i) +"\n";       
+//        }
         tskAdd.txtTableNames.setText(displaylist);
         tskAdd.setVisible(true);
     }//GEN-LAST:event_btnAddListActionPerformed
